@@ -151,10 +151,15 @@ function packDone(dir, cb, order) {
                 console.log("param of mainDir: " + mainDir);
 
                 let findDir = function (dir, oldDir) {
+
+                    const stat = fs.statSync(dir);
+                    if(!stat.isDirectory())
+                        return;
+
                     let files = fs.readdirSync(dir);
                     for (const file of files) {
                         let workDir = path.join(dir, file);
-                        if (fs.existsSync(path.resolve(workDir, "app-service.js"))) {
+                        if (fs.existsSync(path.resolve(workDir, "app-service.js")) || fs.existsSync(path.resolve(workDir, "game.js"))) {
                             console.log("sub package word dir: " + workDir);
                             mainDir = path.resolve(oldDir, mainDir);
                             console.log("real mainDir: " + mainDir);

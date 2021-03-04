@@ -72,20 +72,32 @@ class LimitedRunner {
 let ioEvent = new CntEvent;
 let ioLimit = new LimitedRunner(4096);
 
-function mkdirs(dir, cb) {
-    ioLimit.runWithCb(fs.stat.bind(fs), dir, (err, stats) => {
-        if (err) mkdirs(path.dirname(dir), () => fs.mkdir(dir, cb));
-        else if (stats.isFile()) throw Error(dir + " was created as a file, so we cannot put file into it.");
-        else cb();
-    });
-}
+global.mkdirSync = function(dir) {
+    if(fs.existsSync(dir))
+    {
+        const stat = fs.statSync(dir);
+        if(stat.isDirectory())
+            return;
+
+        console.error(dir + " was created as a file, so we remove it.");
+        fs.unlinkSync(dir);
+    }
+
+    dir = dir.replace(/\\/g, '/');
+
+    while(dir.endsWith('/'))
+        dir = dir.substring(0, path.length - 1);
+
+    let parent = dir.substring(0, dir.lastIndexOf("/"));
+    if(!fs.existsSync(parent))
+        mkdirSync(parent);
+
+    fs.mkdirSync(dir);
+};
 
 function save(name, content) {
-    ioEvent.encount();
-    mkdirs(path.dirname(name), () => ioLimit.runWithCb(fs.writeFile.bind(fs), name, content, err => {
-        if (err) throw Error("Save file error: " + err);
-        ioEvent.decount();
-    }));
+    mkdirSync(path.dirname(name));
+    fs.writeFileSync(name, content);
 }
 
 function get(name, cb, opt = {encoding: 'utf8'}) {
@@ -198,7 +210,7 @@ function commandExecute(cb, helper) {
 }
 
 module.exports = {
-    mkdirs: mkdirs, get: get, save: save, toDir: toDir, del: del, addIO: ioEvent.add,
+    get: get, save: save, toDir: toDir, del: del, addIO: ioEvent.add,
     changeExt: changeExt, CntEvent: CntEvent, scanDirByExt: scanDirByExt, commonDir: commonDir,
     commandExecute: commandExecute
 };

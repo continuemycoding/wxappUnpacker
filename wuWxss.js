@@ -197,7 +197,13 @@ function doWxss(dir, cb, mainDir, nowDir) {
             frameFile = path.resolve(dir, "app-wxss.js");
         else if (fs.existsSync(path.resolve(dir, "page-frame.js")))
             frameFile = path.resolve(dir, "page-frame.js");
-		else throw Error("page-frame-like file is not found in the package by auto.");
+		else
+        {
+            // throw Error("page-frame-like file is not found in the package by auto.");
+            console.error("page-frame-like file is not found in the package by auto.");
+            return;
+        }
+
         wu.get(frameFile, code => {
             code = code.replace(/display:-webkit-box;display:-webkit-flex;/gm, '');
             let scriptCode = code;

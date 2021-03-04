@@ -8,8 +8,8 @@
 
 当检测到 wxapkg 为子包时, 添加-s 参数指定主包源码路径即可自动将子包的 wxss,wxml,js 解析到主包的对应位置下. 完整流程大致如下: 
 1. 获取主包和若干子包
-2. 解包主包 `./bingo.sh testpkg/master-xxx.wxapkg`
-3. 解包子包 `./bingo.sh testpkg/sub-1-xxx.wxapkg -s=../master-xxx`
+2. 解包主包 `node wuWxapkg.js "C:/workspace/decrypt/__APP__.wxapkg"`
+3. 解包子包 `node wuWxapkg.js -s="C:/workspace/decrypt/__APP__.wxapkg" "C:/workspace/decrypt/_subpackages_Main_.wxapkg`
 
 TIP
 > -s 参数可为相对路径或绝对路径, 推荐使用绝对路径, 因为相对路径的起点不是当前目录 而是子包解包后的目录
